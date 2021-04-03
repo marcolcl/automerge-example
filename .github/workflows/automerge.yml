@@ -1,0 +1,36 @@
+name: automerge
+
+on:
+  # Only run the GitHub action on these events
+  pull_request:
+    types:
+      - synchronize
+      - opened
+      - ready_for_review
+      - reopened
+  pull_request_review:
+    types:
+      - submitted
+  check_suite:
+    types:
+      - completed
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: automerge
+        uses: pascalgn/automerge-action@v0.9.0
+        with:
+          # to show full debug logging
+          args: "--trace"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          # merge regardless of labels
+          MERGE_LABELS: ""
+          MERGE_METHOD: "squash"
+          # only merge pull requests opened by dependabot
+          MERGE_FILTER_AUTHOR: "dependabot[bot]"
+          # retry up to 3 times and wait for 10 sec between retries
+          MERGE_RETRIES: "3"
+          MERGE_RETRY_SLEEP: "10000"
